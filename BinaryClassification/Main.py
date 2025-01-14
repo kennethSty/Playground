@@ -8,7 +8,7 @@ import torch
 def main(): 
 
     device = get_device()
-    n_train = 80000 
+    n_train = 100000 
     n_test = 100 
     noise = 0
     print(f"==========Using device: {device}==========")
@@ -19,18 +19,18 @@ def main():
     print("==========Start generating data==========")
     data_generator = CircleDataGenerator(n_train = n_train, n_test = n_test, noise = noise, device = device)
     data_generator.generate_data()
-    data_generator.show_data()
     print("==========Finished generating data==========")
 
     print(f"==========Start training the model==========")
-    model = CircleDetector(input_dim = 2, output_dim = 1, hidden_layers = [8, 16, 8])
+    model = CircleDetector(input_dim = 2, output_dim = 1, hidden_layers = [4,4])
+    model.initialize_weights()
     model = model.to(device)
     loss_fn =  torch.nn.BCELoss()
     model_keeper = ModelKeeper(model = model, 
                                loss_fn = loss_fn, 
                                train_loader = data_generator.train_loader,
                                test_loader = data_generator.test_loader)
-    loss_values_train = model_keeper.train(n_epochs = 50, lr = 0.01, weight_decay = 0.2)
+    loss_values_train = model_keeper.train(n_epochs = 50, lr = 0.2, weight_decay = 0)
     loss_values_test = model_keeper.test()
     print(f"==========Finish training the model==========")
 

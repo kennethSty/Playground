@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 class CircleDataGenerator: 
 
     RANDOM_SEED = 42
-    BATCH_SIZE = 500
+    BATCH_SIZE = 1000
     __slots__ = ["n_train", "n_test", "noise", "train_data", "test_data", "train_loader", "test_loader", "device"]
     
     def __init__(self, n_train: int, n_test: int, noise: float, device: str):
@@ -24,9 +24,5 @@ class CircleDataGenerator:
         self.test_data = CircleData(x_test.squeeze(), y_test.squeeze(), self.device)
         self.train_loader = DataLoader(self.train_data, self.BATCH_SIZE)
         self.test_loader = DataLoader(self.test_data, self.BATCH_SIZE)
-
-    def show_data(self):
-        plt.scatter(self.train_data.x[:, 0].cpu().detach(), self.train_data.x[:, 1].cpu().detach(), c=self.train_data.y.cpu().detach(), cmap=plt.cm.RdBu)
-        plt.show()
          
                                 

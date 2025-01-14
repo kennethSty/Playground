@@ -19,7 +19,7 @@ class ModelKeeper:
     def train(self, n_epochs: int, lr: float, weight_decay: float) -> List[float]:
 
         losses = []
-        optimizer = torch.optim.SGD(lr = lr, params = self.model.parameters(),  weight_decay = weight_decay)
+        optimizer = torch.optim.Adam(lr = lr, params = self.model.parameters(),  weight_decay = weight_decay)
         scheduler = StepLR(optimizer, step_size = 5, gamma=0.5) 
         self.model.train()
         
@@ -37,8 +37,9 @@ class ModelKeeper:
                 accuracy = self.accuracy_fn(y_preds, y)
                 epoch_sum += loss
                 epoch_train_steps += 1
+            self.log_gradients()
             print(f"Epoch: {i}, Accuracy {accuracy} Avg loss: {epoch_sum / epoch_train_steps}")
-            scheduler.step()
+            #scheduler.step()
 
         return losses
 
@@ -59,6 +60,9 @@ class ModelKeeper:
         correct = torch.eq(y_true, y_pred).sum().item() # torch.eq() calculates where two tensors are equal
         acc = (correct / len(y_pred)) * 100 
         return acc
-
-        
             
+    def log_gradients(self):
+            for name, param in self.model.named_parameters():
+                if param.grad is not None:
+                    print(f"{name}: Gradient norm = {param.grad.norm().item()}")
+        
