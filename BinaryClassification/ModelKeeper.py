@@ -27,7 +27,7 @@ class ModelKeeper:
             epoch_sum = 0
             epoch_train_steps = 0
             for x, y in self.train_loader:
-                self.model.zero_grad()
+                optimizer.zero_grad()
                 y_pred_probs = self.model(x).squeeze()
                 y_preds = torch.round(y_pred_probs)
                 loss = self.loss_fn(y_preds, y)
