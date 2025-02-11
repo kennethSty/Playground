@@ -1,0 +1,16 @@
+import torch
+import torch.nn as nn
+from typing import Dict
+from GeLU import GeLU
+
+class FeedForward(nn.Module):
+    def __init__(self, config: Dict):
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(config["emb_dim"], 4 * config["emb_dim"]),
+            GeLU(),
+            nn.Linear(4 * config["emb_dim"], config["emb_dim"])
+        )
+        
+    def forward(self, x):
+        return self.layers(x)  
