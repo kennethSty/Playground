@@ -1,9 +1,10 @@
+from gpt_architecture.config import GPT_CONFIG_124M
+from gpt_architecture.TransformerBlock import TransformerBlock
+from gpt_architecture.LayerNorm import LayerNorm
+
 import torch
 import torch.nn as nn
 from typing import Dict
-from config import GPT_CONFIG_124M
-from TransformerBlock import TransformerBlock
-from LayerNorm import LayerNorm
 
 
 class GPTModel(nn.Module):
@@ -21,6 +22,7 @@ class GPTModel(nn.Module):
         self.out_layer = nn.Linear(config["emb_dim"], config["vocab_size"]) 
 
     def forward(self, x_ids):
+        print(x_ids.shape)
         batch_size, num_tokens = x_ids.shape
         token_embeddings = self.token_embed_layer(x_ids)
         pos_embeddings = self.pos_embed_layer(torch.arange(num_tokens, device = x_ids.device))

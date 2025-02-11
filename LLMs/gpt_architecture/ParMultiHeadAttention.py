@@ -45,7 +45,7 @@ class ParMultiHeadAttention(nn.Module):
         values = values.transpose(1, 2)
 
         #compute matrix product in each batch, in each head of num_tokens, head_out_dim matrices
-        attention_scores = queries @ values.transpose(2, 3) 
+        attention_scores = queries @ values.transpose(2, 3) # will do matrix mult of dims: (n_tok, head out) (head_out, n_tok) 
 
         #Mask attention scores for causal attention
         mask_bool = self.mask.bool()[:num_tokens, :num_tokens] 

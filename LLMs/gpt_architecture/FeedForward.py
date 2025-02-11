@@ -1,7 +1,8 @@
+from gpt_architecture.GeLU import GeLU
+
 import torch
 import torch.nn as nn
 from typing import Dict
-from GeLU import GeLU
 
 class FeedForward(nn.Module):
     def __init__(self, config: Dict):

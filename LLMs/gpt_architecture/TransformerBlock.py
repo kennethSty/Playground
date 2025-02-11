@@ -1,9 +1,9 @@
+from gpt_architecture.LayerNorm import LayerNorm
+from gpt_architecture.ParMultiHeadAttention import ParMultiHeadAttention
+from gpt_architecture.FeedForward import FeedForward
 import torch
 import torch.nn as nn
-from LayerNorm import LayerNorm
 from typing import Dict
-from ParMultiHeadAttention import ParMultiHeadAttention
-from FeedForward import FeedForward
 
 class TransformerBlock(nn.Module):
     def __init__(self, config: Dict):
