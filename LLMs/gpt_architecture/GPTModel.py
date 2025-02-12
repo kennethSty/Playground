@@ -8,11 +8,11 @@ from typing import Dict
 
 
 class GPTModel(nn.Module):
-    def __init__(self, config = GPT_CONFIG_124M):
+    def __init__(self, config):
         super().__init__()
 
         self.token_embed_layer = nn.Embedding(config["vocab_size"], config["emb_dim"])
-        self.pos_embed_layer = nn.Embedding(config["vocab_size"], config["emb_dim"])
+        self.pos_embed_layer = nn.Embedding(config["context_length"], config["emb_dim"])
         self.dropout_layer = nn.Dropout(config["drop_rate"])
         self.transformer_blocks = nn.Sequential(
             *[TransformerBlock(config) for _ in range(config["n_layers"])]
@@ -22,10 +22,11 @@ class GPTModel(nn.Module):
         self.out_layer = nn.Linear(config["emb_dim"], config["vocab_size"]) 
 
     def forward(self, x_ids):
-        print(x_ids.shape)
         batch_size, num_tokens = x_ids.shape
         token_embeddings = self.token_embed_layer(x_ids)
-        pos_embeddings = self.pos_embed_layer(torch.arange(num_tokens, device = x_ids.device))
+        pos_embeddings = self.pos_embed_layer(
+            torch.arange(num_tokens, device = x_ids.device)
+        )
         x = token_embeddings + pos_embeddings #shape: (batch, num_tok, emb_dim)
         x = self.dropout_layer(x)
         z = self.transformer_blocks(x)

@@ -13,7 +13,8 @@ class TransformerBlock(nn.Module):
             d_out = config["emb_dim"],
             context_length = config["context_length"],
             dropout = config["drop_rate"],
-            num_heads = config["n_heads"]
+            num_heads = config["n_heads"],
+            qkv_bias = config["qkv_bias"]
             )
         self.layer_norm1 = LayerNorm(emb_dim = config["emb_dim"])
         self.layer_norm2 = LayerNorm(emb_dim = config["emb_dim"])
@@ -23,14 +24,16 @@ class TransformerBlock(nn.Module):
     def forward(self, x):
         batch_size, n_tokens, emb_dim = x.shape
 
-        x_norm = self.layer_norm1(x)
-        z = self.multi_head_attn(x_norm)
-        z = self.dropout(z)
-        x = z + x #skip connection
+        skip_connect = x
+        x = self.layer_norm1(x)
+        x = self.multi_head_attn(x)
+        x = self.dropout(x)
+        x = x + skip_connect 
 
-        x_norm = self.layer_norm2(x)
-        z = self.feed_forward(x_norm)
-        z = self.dropout(z)
-        x = z + x #skip connection
+        skip_connect = x
+        x = self.layer_norm2(x)
+        x = self.feed_forward(x)
+        x = self.dropout(x)
+        x = x + skip_connect
         
         return x
