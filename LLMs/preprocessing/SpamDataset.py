@@ -6,16 +6,26 @@ import pandas as pd
 class SpamDataset(Dataset):
 
     def __init__(self, csv_file:str, 
-        tokenizer:tiktoken.Encoding, 
+        tokenizer:tiktoken.Encoding,
+        max_length=None, 
         padding_text="<|endoftext|>"):
 
-        pad_token_id = tokenizer.encode(padding_text, allowed_special={"<|endoftext|>"})
-
+        pad_token_id = tokenizer.encode(padding_text, allowed_special={"<|endoftext|>"})[0]
+        
         self.data = pd.read_csv(csv_file)
         self.encoded_texts = [
             tokenizer.encode(text) for text in self.data["Text"]
-        ]        
-        self.max_length = self._longest_encoded_length()
+        ]
+        
+        if max_length is None:
+            self.max_length = self._longest_encoded_length()
+        else: #use max length and truncate input texts to max length
+            self.max_length = max_length
+            self.encoded_texts = [
+                encoded_text[:self.max_length]
+                for encoded_text in self.encoded_texts
+            ]
+            
         self.encoded_texts = [
             encoded_text + [pad_token_id] * (
                 self.max_length - len(encoded_text)
@@ -25,9 +35,9 @@ class SpamDataset(Dataset):
 
     def __getitem__(self, index):
         encoded = self.encoded_texts[index]
-        label = self.data.iloc[index]["Label1"]
+        label = self.data.iloc[index]["Label"]
         return (
-            torch.tensor(endcoded, dtype=torch.long),
+            torch.tensor(encoded, dtype=torch.long),
             torch.tensor(label, dtype=torch.long)
         )
 

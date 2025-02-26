@@ -13,7 +13,8 @@ def train_model(
     optimizer: torch.optim.Optimizer,
     device: str,
     num_epochs: int,
-    eval_freq: int, 
+    eval_freq: int,
+    eval_iter: int, 
     start_context: str,
     tokenizer: tiktoken.Encoding):
     """Trains the model"""
@@ -36,7 +37,7 @@ def train_model(
 
             if global_step % eval_freq == 0:
                 train_loss, val_loss = evaluate_model(
-                    model, train_loader, val_loader, device
+                    model, train_loader, val_loader, device, eval_iter=eval_iter
                 )
                 train_losses.append(train_loss)
                 val_losses.append(val_loss)
@@ -55,16 +56,17 @@ def evaluate_model(
     model: nn.Module,
     train_loader: DataLoader,
     val_loader: DataLoader,
-    device: str):
+    device: str,
+    eval_iter: int):
     """Evaluates if the model improves during training"""
 
     model.eval()
     with torch.inference_mode():
         train_loss = calc_loss_loader(
-            train_loader, model, device
+            train_loader, model, device, eval_iter
         )
         val_loss = calc_loss_loader(
-            val_loader, model, device
+            val_loader, model, device, eval_iter
         )
         
     model.train()

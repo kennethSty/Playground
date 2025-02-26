@@ -75,6 +75,10 @@ def create_ftuning_datasets():
         higher_freq_label="ham"
     )
 
+    balanced_df["Label"] = balanced_df["Label"].map(
+        {"ham": 0, "spam": 1}
+    )
+
     train_df, validation_df, test_df = random_split(
         balanced_df, train_frac=0.7, val_frac=0.1
     )
